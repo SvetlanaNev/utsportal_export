@@ -57,8 +57,12 @@ export default function DashboardPage() {
       }
       const jsonData = await response.json();
       setData(jsonData);
-    } catch (e: any) {
-      setError(e.message);
+    } catch (e) {
+      if (e instanceof Error) {
+        setError(e.message);
+      } else {
+        setError('An unexpected error occurred');
+      }
     } finally {
       setIsLoading(false);
     }

@@ -1,11 +1,11 @@
-import Airtable from 'airtable';
+import Airtable, { FieldSet, Record } from 'airtable';
 
 const base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(process.env.AIRTABLE_BASE_ID!);
 
 const STARTUPS_TABLE = 'UTS Startups';
 const TEAM_MEMBERS_TABLE = 'Team Members';
 
-export async function findUserByEmail(email: string): Promise<{ record: any; table: string } | null> {
+export async function findUserByEmail(email: string): Promise<{ record: Record<FieldSet>; table: string } | null> {
   const lowercasedEmail = email.toLowerCase();
 
   // Check Startups table
@@ -31,7 +31,7 @@ export async function findUserByEmail(email: string): Promise<{ record: any; tab
   return null;
 }
 
-export async function findUserByToken(token: string): Promise<{ record: any; table: string } | null> {
+export async function findUserByToken(token: string): Promise<{ record: Record<FieldSet>; table: string } | null> {
   // Check Startups table
   const startupRecords = await base(STARTUPS_TABLE).select({
     filterByFormula: `{Magic Link Token} = "${token}"`,
