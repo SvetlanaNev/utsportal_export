@@ -24,10 +24,15 @@ export async function POST(request: Request) {
     const token = randomUUID();
     const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes from now
 
-    await base(user.table).update(user.record.id, {
-      'Magic Link Token': token,
-      'Token Expires At': expiresAt.toISOString(),
-    });
+    await base(user.table).update([
+      {
+        id: user.record.id,
+        fields: {
+          'Magic Link Token': token,
+          'Token Expires At': expiresAt.toISOString(),
+        },
+      },
+    ]);
 
     return NextResponse.json({ message: 'If your email is in our system, you will receive a login link shortly.' });
   } catch (error) {
