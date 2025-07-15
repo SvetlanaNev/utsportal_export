@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { findUserByToken } from '@/lib/airtable';
+import { findUserByToken, FieldSet } from '@/lib/airtable';
 import { base } from '@/lib/airtable';
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
@@ -21,21 +21,22 @@ export async function GET(request: Request) {
       return NextResponse.redirect(new URL('/?error=Invalid+token', request.url));
     }
 
-    const expiresAt = new Date(user.record.get('Token Expires At'));
+    const tokenExpiresAt = user.record.get('Token Expires At');
+    if (!tokenExpiresAt) {
+      return NextResponse.redirect(new URL('/?error=Invalid+token+data', request.url));
+    }
+
+    const expiresAt = new Date(tokenExpiresAt as string);
     if (expiresAt < new Date()) {
       return NextResponse.redirect(new URL('/?error=Token+expired', request.url));
     }
 
     // Clear the token in Airtable
-    await base(user.table).update([
-      {
-        id: user.record.id,
-        fields: {
-          'Magic Link Token': undefined,
-          'Token Expires At': undefined,
-        }
-      }
-    ]);
+    const fieldsToUpdate: FieldSet = {
+      'Magic Link Token': undefined,
+      'Token Expires At': undefined,
+    };
+    await base(user.table).update(user.record.id, fieldsToUpdate);
 
     const email = user.table === 'UTS Startups'
       ? user.record.get('Primary contact email')

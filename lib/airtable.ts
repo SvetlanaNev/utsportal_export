@@ -105,4 +105,5 @@ export async function getDashboardData(email: string) {
 }
 
 
-export { base, STARTUPS_TABLE, TEAM_MEMBERS_TABLE }; 
+export { base, STARTUPS_TABLE, TEAM_MEMBERS_TABLE };
+export type { FieldSet }; 
