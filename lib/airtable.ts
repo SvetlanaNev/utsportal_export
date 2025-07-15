@@ -34,7 +34,7 @@ export async function findUserByEmail(email: string): Promise<{ record: Record<F
 export async function findUserByToken(token: string): Promise<{ record: Record<FieldSet>; table: string } | null> {
   // Check Startups table
   const startupRecords = await base(STARTUPS_TABLE).select({
-    filterByFormula: `{Magic Link Token} = "${token}"`,
+    filterByFormula: `{Magic Link} = "${token}"`,
     maxRecords: 1
   }).firstPage();
 
@@ -44,7 +44,7 @@ export async function findUserByToken(token: string): Promise<{ record: Record<F
 
   // Check Team Members table
   const teamMemberRecords = await base(TEAM_MEMBERS_TABLE).select({
-    filterByFormula: `{Magic Link Token} = "${token}"`,
+    filterByFormula: `{Magic Link} = "${token}"`,
     maxRecords: 1
   }).firstPage();
 

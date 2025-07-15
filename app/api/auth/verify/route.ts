@@ -33,7 +33,7 @@ export async function GET(request: Request) {
 
     // Clear the token in Airtable
     const fieldsToUpdate: FieldSet = {
-      'Magic Link Token': undefined,
+      'Magic Link': undefined,
       'Token Expires At': undefined,
     };
     await base(user.table).update(user.record.id, fieldsToUpdate);

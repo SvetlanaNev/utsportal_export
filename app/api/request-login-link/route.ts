@@ -28,7 +28,7 @@ export async function POST(request: Request) {
       {
         id: user.record.id,
         fields: {
-          'Magic Link Token': token,
+          'Magic Link': token,
           'Token Expires At': expiresAt.toISOString(),
         },
       },
