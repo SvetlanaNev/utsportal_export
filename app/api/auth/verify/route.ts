@@ -15,19 +15,25 @@ export async function GET(request: Request) {
   }
 
   try {
+    console.log(`[VERIFY_TOKEN] Attempting to verify token: ${token}`);
     const user = await findUserByToken(token);
 
     if (!user) {
+      console.log('[VERIFY_TOKEN_ERROR] User not found for token.');
       return NextResponse.redirect(new URL('/?error=Invalid+token', request.url));
     }
+    console.log(`[VERIFY_TOKEN] User found in table: ${user.table}`);
 
     const tokenExpiresAt = user.record.get('Token Expires At');
     if (!tokenExpiresAt) {
+      console.log('[VERIFY_TOKEN_ERROR] "Token Expires At" field not found or is empty.');
       return NextResponse.redirect(new URL('/?error=Invalid+token+data', request.url));
     }
+    console.log(`[VERIFY_TOKEN] Token expires at value: ${tokenExpiresAt}`);
 
     const expiresAt = new Date(tokenExpiresAt as string);
     if (expiresAt < new Date()) {
+      console.log('[VERIFY_TOKEN_ERROR] Token has expired.');
       return NextResponse.redirect(new URL('/?error=Token+expired', request.url));
     }
 
@@ -61,7 +67,7 @@ export async function GET(request: Request) {
     return response;
 
   } catch (error) {
-    console.error(error);
+    console.error('[VERIFY_TOKEN_CATCH_ERROR]', error);
     return NextResponse.redirect(new URL('/?error=An+unexpected+error+occurred', request.url));
   }
 } 
