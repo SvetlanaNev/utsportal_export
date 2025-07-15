@@ -36,7 +36,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ message: 'If your email is in our system, you will receive a login link shortly.' });
   } catch (error) {
-    console.error(error);
+    console.error('[LOGIN_REQUEST_ERROR]', error);
     return NextResponse.json({ message: 'An unexpected error occurred.' }, { status: 500 });
   }
 } 
