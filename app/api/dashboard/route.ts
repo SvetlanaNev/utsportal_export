@@ -1,5 +1,4 @@
-import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
+import { NextResponse, NextRequest } from 'next/server';
 import jwt from 'jsonwebtoken';
 import { getDashboardData } from '@/lib/airtable';
 
@@ -9,8 +8,8 @@ interface JwtPayload {
   email: string;
 }
 
-export async function GET() {
-  const sessionCookie = cookies().get('session');
+export async function GET(request: NextRequest) {
+  const sessionCookie = request.cookies.get('session');
 
   if (!sessionCookie) {
     return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
