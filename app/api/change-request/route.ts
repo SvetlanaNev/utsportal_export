@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 import { base } from '@/lib/airtable';
 import prisma from '@/lib/prisma';
@@ -18,15 +17,15 @@ interface ChangeRequestBody {
 }
 
 export async function POST(request: Request) {
-  const cookieStore = cookies();
-  const sessionCookie = cookieStore.get('session');
+  const cookieHeader = request.headers.get('cookie');
+  const sessionCookie = cookieHeader?.split('; ').find(c => c.startsWith('session='))?.split('=')[1];
 
   if (!sessionCookie) {
     return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
   }
 
   try {
-    const { email: userEmail } = jwt.verify(sessionCookie.value, process.env.JWT_SECRET!) as JwtPayload;
+    const { email: userEmail } = jwt.verify(sessionCookie, process.env.JWT_SECRET!) as JwtPayload;
 
     const { table, recordId, changes, reason }: ChangeRequestBody = await request.json();
 
