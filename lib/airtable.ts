@@ -95,9 +95,15 @@ export async function getDashboardData(email: string) {
   }
 
   if (idsToFetch.length > 0) {
-    const teamMemberRecords = await Promise.all(
-      idsToFetch.map((id) => base(TEAM_MEMBERS_TABLE).find(id))
+    // Fetch each team member record individually and filter out any that are not found.
+    const promises = idsToFetch.map(id =>
+      base(TEAM_MEMBERS_TABLE).find(id).catch(error => {
+        console.error(`Could not find team member with ID ${id} from startup ${startupRecord.id}. It may be a broken link.`, error);
+        return null; // Return null if a record is not found
+      })
     );
+    const results = await Promise.all(promises);
+    const teamMemberRecords = results.filter(record => record !== null) as Record<FieldSet>[];
 
     for (const record of teamMemberRecords) {
       teamMembers.push({
