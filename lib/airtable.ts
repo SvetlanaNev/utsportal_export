@@ -81,6 +81,7 @@ export async function getDashboardData(email: string) {
   const startupName = startupRecord.get('Startup Name (or working title)') as string;
   const primaryContactEmail = startupRecord.get('Primary contact email') as string;
   const teamMemberIdsFromAirtable = startupRecord.get('Team');
+  console.log('[DASHBOARD_DATA] Raw team member IDs from Airtable:', teamMemberIdsFromAirtable);
 
   const teamMembers: { id: string, name: string, email: string, position: string, mobile: string, association: string }[] = [];
 
@@ -117,6 +118,7 @@ export async function getDashboardData(email: string) {
     }
   }
 
+  console.log('[DASHBOARD_DATA] Final processed team members array:', teamMembers);
   return {
     startupId: startupRecord.id,
     startupName,
