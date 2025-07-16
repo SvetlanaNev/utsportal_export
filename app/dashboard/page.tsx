@@ -1,25 +1,12 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Button } from '@/components/ui/button';
-import { Edit } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ChangeRequestForm } from '@/components/change-request-form';
+import { Mail, Phone, Building, User, LogOut, Briefcase, UserCheck, Users } from 'lucide-react';
 
 interface TeamMember {
   id: string;
@@ -41,7 +28,6 @@ interface DashboardData {
 export default function DashboardPage() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   const fetchData = async () => {
@@ -61,9 +47,9 @@ export default function DashboardPage() {
       setData(jsonData);
     } catch (e) {
       if (e instanceof Error) {
-        setError(e.message);
+        // setError(e.message); // This line was removed as per the new_code
       } else {
-        setError('An unexpected error occurred');
+        // setError('An unexpected error occurred'); // This line was removed as per the new_code
       }
     } finally {
       setIsLoading(false);
@@ -77,97 +63,143 @@ export default function DashboardPage() {
   const handleLogout = async () => {
     await fetch('/api/auth/logout', { method: 'POST' });
     router.push('/');
-  }
+  };
 
   if (isLoading) {
-    return <div className="flex items-center justify-center h-screen">Loading...</div>;
-  }
-
-  if (error) {
-    return <div className="flex items-center justify-center h-screen">Error: {error}</div>;
+    return <div className="flex items-center justify-center h-screen bg-gray-50">Loading...</div>;
   }
 
   if (!data) {
-    return <div className="flex items-center justify-center h-screen">No data found.</div>;
+    return <div className="flex items-center justify-center h-screen bg-gray-50">No data found.</div>;
   }
 
   const loggedInUser = data.teamMembers.find(member => member.email === data.userEmail);
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-          <h1 className="text-xl font-semibold text-gray-900">Dashboard</h1>
-          <Button onClick={handleLogout} variant="outline">Logout</Button>
+    <div className="min-h-screen bg-slate-50 text-slate-800">
+      {/* Header */}
+      <header className="bg-white border-b border-slate-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+          <div className="flex items-center space-x-4">
+            <div className="bg-slate-800 p-3 rounded-lg">
+              <Building className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-slate-900">{data.startupName}</h1>
+              <p className="text-sm text-slate-500">Startup Dashboard</p>
+            </div>
+          </div>
+          <div className="flex items-center space-x-2">
+            {loggedInUser && (
+              <ChangeRequestForm teamMember={loggedInUser} onSuccess={fetchData}>
+                <Button variant="outline">Update Profile</Button>
+              </ChangeRequestForm>
+            )}
+            <Button onClick={handleLogout} variant="ghost" size="icon">
+              <LogOut className="h-5 w-5" />
+            </Button>
+          </div>
         </div>
       </header>
-      <main className="flex-1 py-10">
-        <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle>{data.startupName}</CardTitle>
-              <CardDescription>Primary Contact: {data.primaryContactEmail}</CardDescription>
-            </CardHeader>
-          </Card>
-          {loggedInUser && (
-            <Card className="mb-8">
+
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+          {/* Left Column */}
+          <div className="lg:col-span-2 space-y-8">
+            <Card>
               <CardHeader>
-                <CardTitle>My Profile</CardTitle>
+                <CardTitle>Startup Information</CardTitle>
               </CardHeader>
-              <CardContent>
-                <p><strong>Name:</strong> {loggedInUser.name}</p>
-                <p><strong>Email:</strong> {loggedInUser.email}</p>
-                <p><strong>Position:</strong> {loggedInUser.position}</p>
-                <p><strong>Mobile:</strong> {loggedInUser.mobile}</p>
-                <p><strong>UTS Association:</strong> {loggedInUser.association}</p>
+              <CardContent className="space-y-4">
+                <div className="flex items-center">
+                  <Building className="h-5 w-5 text-slate-400 mr-4" />
+                  <div>
+                    <p className="text-sm text-slate-500">Startup Name</p>
+                    <p className="font-medium">{data.startupName}</p>
+                  </div>
+                </div>
+                <div className="flex items-center">
+                  <Mail className="h-5 w-5 text-slate-400 mr-4" />
+                  <div>
+                    <p className="text-sm text-slate-500">Primary Contact</p>
+                    <p className="font-medium">{data.primaryContactEmail}</p>
+                  </div>
+                </div>
+                <div className="flex items-center">
+                  <Users className="h-5 w-5 text-slate-400 mr-4" />
+                  <div>
+                    <p className="text-sm text-slate-500">Team Size</p>
+                    <p className="font-medium">{data.teamMembers.length} members</p>
+                  </div>
+                </div>
               </CardContent>
             </Card>
-          )}
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <div>
+
+            {loggedInUser && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Your Profile</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center">
+                    <Mail className="h-5 w-5 text-slate-400 mr-4" />
+                    <div>
+                      <p className="text-sm text-slate-500">Email</p>
+                      <p className="font-medium">{loggedInUser.email}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center">
+                    <Phone className="h-5 w-5 text-slate-400 mr-4" />
+                    <div>
+                      <p className="text-sm text-slate-500">Mobile</p>
+                      <p className="font-medium">{loggedInUser.mobile}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center">
+                    <Briefcase className="h-5 w-5 text-slate-400 mr-4" />
+                    <div>
+                      <p className="text-sm text-slate-500">Position</p>
+                      <p className="font-medium">{loggedInUser.position}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center">
+                    <UserCheck className="h-5 w-5 text-slate-400 mr-4" />
+                    <div>
+                      <p className="text-sm text-slate-500">UTS Association</p>
+                      <p className="font-medium">{loggedInUser.association}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+
+          {/* Right Column */}
+          <div className="space-y-8">
+            <Card>
+              <CardHeader>
                 <CardTitle>Team Members</CardTitle>
-                <CardDescription>
-                  This is the list of members in your startup.
-                </CardDescription>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Position</TableHead>
-                    <TableHead>Mobile</TableHead>
-                    <TableHead>UTS Association</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {data.teamMembers.map((member) => (
-                    <TableRow key={member.id}>
-                      <TableCell className="font-medium">{member.name}</TableCell>
-                      <TableCell>{member.email}</TableCell>
-                      <TableCell>{member.position}</TableCell>
-                      <TableCell>{member.mobile}</TableCell>
-                      <TableCell>{member.association}</TableCell>
-                      <TableCell className="text-right">
-                        {member.email === data.userEmail && (
-                          <ChangeRequestForm teamMember={member} onSuccess={fetchData}>
-                            <Button variant="outline" size="sm">
-                              <Edit className="h-4 w-4 mr-2" />
-                              Edit My Profile
-                            </Button>
-                          </ChangeRequestForm>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+                <CardDescription>All members of your startup team</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {data.teamMembers.map((member) => (
+                  <div key={member.id} className="flex items-center space-x-4">
+                    <Avatar>
+                      <AvatarImage src={`https://api.dicebear.com/8.x/initials/svg?seed=${member.name}`} />
+                      <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="font-semibold">{member.name}</p>
+                      <p className="text-sm text-slate-500">{member.email}</p>
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          </div>
+
         </div>
       </main>
     </div>
