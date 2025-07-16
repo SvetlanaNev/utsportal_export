@@ -62,24 +62,36 @@ export async function getDashboardData(email: string) {
 
   let startupRecord;
   if (user.table === TEAM_MEMBERS_TABLE) {
-    const startupIds = user.record.get('Startup*') as string[] | undefined;
-    if (!startupIds || startupIds.length === 0) {
+    const startupIdsFromAirtable = user.record.get('Startup*');
+    if (!startupIdsFromAirtable) {
       return null; // Team member not linked to any startup
     }
-    startupRecord = await base(STARTUPS_TABLE).find(startupIds[0]);
+    // Handle both single and multiple linked records
+    const startupId = Array.isArray(startupIdsFromAirtable) ? (startupIdsFromAirtable[0] as string) : (startupIdsFromAirtable as string);
+    startupRecord = await base(STARTUPS_TABLE).find(startupId);
   } else {
     startupRecord = user.record;
   }
 
   const startupName = startupRecord.get('Startup Name (or working title)') as string;
   const primaryContactEmail = startupRecord.get('Primary contact email') as string;
-  const teamMemberIds = startupRecord.get('Team') as string[] | undefined;
+  const teamMemberIdsFromAirtable = startupRecord.get('Team');
 
   const teamMembers: { id: string, name: string, email: string, position: string, mobile: string, association: string }[] = [];
 
-  if (teamMemberIds) {
+  // Handle both single and multiple linked records for team members
+  let idsToFetch: string[] = [];
+  if (teamMemberIdsFromAirtable) {
+    if (Array.isArray(teamMemberIdsFromAirtable)) {
+      idsToFetch = teamMemberIdsFromAirtable as string[];
+    } else {
+      idsToFetch = [teamMemberIdsFromAirtable as string];
+    }
+  }
+
+  if (idsToFetch.length > 0) {
     const teamMemberRecords = await Promise.all(
-      teamMemberIds.map((id) => base(TEAM_MEMBERS_TABLE).find(id))
+      idsToFetch.map((id) => base(TEAM_MEMBERS_TABLE).find(id))
     );
 
     for (const record of teamMemberRecords) {
