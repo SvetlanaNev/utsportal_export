@@ -27,7 +27,7 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
-import { TEAM_MEMBERS_TABLE } from "@/lib/airtable";
+import { TEAM_MEMBERS_TABLE } from "@/lib/constants";
 
 interface TeamMember {
   id: string;

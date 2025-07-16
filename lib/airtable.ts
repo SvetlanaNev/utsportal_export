@@ -1,9 +1,7 @@
 import Airtable, { FieldSet, Record } from 'airtable';
+import { STARTUPS_TABLE, TEAM_MEMBERS_TABLE } from './constants';
 
 const base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(process.env.AIRTABLE_BASE_ID!);
-
-const STARTUPS_TABLE = 'UTS Startups';
-const TEAM_MEMBERS_TABLE = 'Team Members';
 
 export async function findUserByEmail(email: string): Promise<{ record: Record<FieldSet>; table: string } | null> {
   const lowercasedEmail = email.toLowerCase();
