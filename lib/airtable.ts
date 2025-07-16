@@ -96,15 +96,13 @@ export async function getDashboardData(email: string) {
   }
 
   if (idsToFetch.length > 0) {
-    // Fetch each team member record individually and filter out any that are not found.
-    const promises = idsToFetch.map(id =>
-      base(TEAM_MEMBERS_TABLE).find(id).catch(error => {
-        console.error(`Could not find team member with ID ${id} from startup ${startupRecord.id}. It may be a broken link.`, error);
-        return null; // Return null if a record is not found
-      })
-    );
-    const results = await Promise.all(promises);
-    const teamMemberRecords = results.filter(record => record !== null) as Record<FieldSet>[];
+    // The Airtable API is returning the primary field value (name) of linked records, not their IDs.
+    // We must build a formula to select the team members by their names.
+    const filterFormula = "OR(" + idsToFetch.map(name => `{Team member ID} = '${name.replace(/'/g, "\\'")}'`).join(',') + ")";
+
+    const teamMemberRecords = await base(TEAM_MEMBERS_TABLE).select({
+      filterByFormula: filterFormula
+    }).all();
 
     for (const record of teamMemberRecords) {
       teamMembers.push({
