@@ -1,4 +1,5 @@
-import { NextResponse, NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 import { base } from '@/lib/airtable';
 import prisma from '@/lib/prisma';
@@ -16,8 +17,9 @@ interface ChangeRequestBody {
   reason: string;
 }
 
-export async function POST(request: NextRequest) {
-  const sessionCookie = request.cookies.get('session');
+export async function POST(request: Request) {
+  const cookieStore = cookies();
+  const sessionCookie = cookieStore.get('session');
 
   if (!sessionCookie) {
     return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
