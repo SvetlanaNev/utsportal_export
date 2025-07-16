@@ -47,7 +47,9 @@ export default function DashboardPage() {
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/dashboard');
+      const response = await fetch('/api/dashboard', {
+        credentials: 'include',
+      });
       if (!response.ok) {
         if (response.status === 401) {
           router.push('/');
