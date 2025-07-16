@@ -68,7 +68,12 @@ export async function getDashboardData(email: string) {
     }
     // Handle both single and multiple linked records
     const startupId = Array.isArray(startupIdsFromAirtable) ? (startupIdsFromAirtable[0] as string) : (startupIdsFromAirtable as string);
-    startupRecord = await base(STARTUPS_TABLE).find(startupId);
+    try {
+      startupRecord = await base(STARTUPS_TABLE).find(startupId);
+    } catch (error) {
+      console.error(`Could not find startup with ID ${startupId} linked from team member ${user.record.id}`);
+      return null; // The linked startup was not found
+    }
   } else {
     startupRecord = user.record;
   }
