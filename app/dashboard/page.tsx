@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ChangeRequestForm } from '@/components/change-request-form';
-import { Mail, Phone, Building, User, LogOut, Briefcase, UserCheck, Users } from 'lucide-react';
+import { Mail, Phone, Building, LogOut, Briefcase, UserCheck, Users, Edit } from 'lucide-react';
 
 interface TeamMember {
   id: string;
@@ -46,11 +46,7 @@ export default function DashboardPage() {
       const jsonData = await response.json();
       setData(jsonData);
     } catch (e) {
-      if (e instanceof Error) {
-        // setError(e.message); // This line was removed as per the new_code
-      } else {
-        // setError('An unexpected error occurred'); // This line was removed as per the new_code
-      }
+      // Error handling is silent as per previous steps
     } finally {
       setIsLoading(false);
     }
@@ -66,74 +62,58 @@ export default function DashboardPage() {
   };
 
   if (isLoading) {
-    return <div className="flex items-center justify-center h-screen bg-gray-50">Loading...</div>;
+    return <div className="flex items-center justify-center h-screen bg-slate-50">Loading...</div>;
   }
 
   if (!data) {
-    return <div className="flex items-center justify-center h-screen bg-gray-50">No data found.</div>;
+    return <div className="flex items-center justify-center h-screen bg-slate-50">No data found.</div>;
   }
 
   const loggedInUser = data.teamMembers.find(member => member.email === data.userEmail);
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800">
-      {/* Header */}
-      <header className="bg-white border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-          <div className="flex items-center space-x-4">
-            <div className="bg-slate-800 p-3 rounded-lg">
-              <Building className="h-6 w-6 text-white" />
+    <div className="min-h-screen bg-gray-50">
+      <header className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-4">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-gray-800 rounded-lg">
+                <Building className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold text-gray-900">{data.startupName}</h1>
+                <p className="text-sm text-gray-500">Startup Dashboard</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-xl font-bold text-slate-900">{data.startupName}</h1>
-              <p className="text-sm text-slate-500">Startup Dashboard</p>
+            <div className="flex items-center space-x-2">
+              {loggedInUser && (
+                <ChangeRequestForm teamMember={loggedInUser} onSuccess={fetchData}>
+                  <Button variant="outline" size="sm" className="flex items-center gap-2">
+                    <Edit className="h-4 w-4" />
+                    Update My Profile
+                  </Button>
+                </ChangeRequestForm>
+              )}
+              <Button onClick={handleLogout} variant="ghost" size="icon" aria-label="Log out">
+                <LogOut className="h-5 w-5" />
+              </Button>
             </div>
-          </div>
-          <div className="flex items-center space-x-2">
-            {loggedInUser && (
-              <ChangeRequestForm teamMember={loggedInUser} onSuccess={fetchData}>
-                <Button variant="outline">Update Profile</Button>
-              </ChangeRequestForm>
-            )}
-            <Button onClick={handleLogout} variant="ghost" size="icon">
-              <LogOut className="h-5 w-5" />
-            </Button>
           </div>
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <main className="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
 
-          {/* Left Column */}
-          <div className="lg:col-span-2 space-y-8">
+          <div className="lg:col-span-2 grid grid-cols-1 gap-8">
             <Card>
               <CardHeader>
                 <CardTitle>Startup Information</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center">
-                  <Building className="h-5 w-5 text-slate-400 mr-4" />
-                  <div>
-                    <p className="text-sm text-slate-500">Startup Name</p>
-                    <p className="font-medium">{data.startupName}</p>
-                  </div>
-                </div>
-                <div className="flex items-center">
-                  <Mail className="h-5 w-5 text-slate-400 mr-4" />
-                  <div>
-                    <p className="text-sm text-slate-500">Primary Contact</p>
-                    <p className="font-medium">{data.primaryContactEmail}</p>
-                  </div>
-                </div>
-                <div className="flex items-center">
-                  <Users className="h-5 w-5 text-slate-400 mr-4" />
-                  <div>
-                    <p className="text-sm text-slate-500">Team Size</p>
-                    <p className="font-medium">{data.teamMembers.length} members</p>
-                  </div>
-                </div>
+              <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <InfoItem icon={<Building />} label="Startup Name" value={data.startupName} />
+                <InfoItem icon={<Mail />} label="Primary Contact" value={data.primaryContactEmail} />
+                <InfoItem icon={<Users />} label="Team Size" value={`${data.teamMembers.length} members`} />
               </CardContent>
             </Card>
 
@@ -142,42 +122,17 @@ export default function DashboardPage() {
                 <CardHeader>
                   <CardTitle>Your Profile</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center">
-                    <Mail className="h-5 w-5 text-slate-400 mr-4" />
-                    <div>
-                      <p className="text-sm text-slate-500">Email</p>
-                      <p className="font-medium">{loggedInUser.email}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center">
-                    <Phone className="h-5 w-5 text-slate-400 mr-4" />
-                    <div>
-                      <p className="text-sm text-slate-500">Mobile</p>
-                      <p className="font-medium">{loggedInUser.mobile}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center">
-                    <Briefcase className="h-5 w-5 text-slate-400 mr-4" />
-                    <div>
-                      <p className="text-sm text-slate-500">Position</p>
-                      <p className="font-medium">{loggedInUser.position}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center">
-                    <UserCheck className="h-5 w-5 text-slate-400 mr-4" />
-                    <div>
-                      <p className="text-sm text-slate-500">UTS Association</p>
-                      <p className="font-medium">{loggedInUser.association}</p>
-                    </div>
-                  </div>
+                <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <InfoItem icon={<Mail />} label="Email" value={loggedInUser.email} />
+                  <InfoItem icon={<Phone />} label="Mobile" value={loggedInUser.mobile} />
+                  <InfoItem icon={<Briefcase />} label="Position" value={loggedInUser.position} />
+                  <InfoItem icon={<UserCheck />} label="UTS Association" value={loggedInUser.association} />
                 </CardContent>
               </Card>
             )}
           </div>
 
-          {/* Right Column */}
-          <div className="space-y-8">
+          <div className="lg:col-span-1">
             <Card>
               <CardHeader>
                 <CardTitle>Team Members</CardTitle>
@@ -190,9 +145,9 @@ export default function DashboardPage() {
                       <AvatarImage src={`https://api.dicebear.com/8.x/initials/svg?seed=${member.name}`} />
                       <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
                     </Avatar>
-                    <div>
-                      <p className="font-semibold">{member.name}</p>
-                      <p className="text-sm text-slate-500">{member.email}</p>
+                    <div className="flex-1">
+                      <p className="font-semibold text-sm">{member.name}</p>
+                      <p className="text-xs text-gray-500">{member.email}</p>
                     </div>
                   </div>
                 ))}
@@ -202,6 +157,18 @@ export default function DashboardPage() {
 
         </div>
       </main>
+    </div>
+  );
+}
+
+function InfoItem({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
+  return (
+    <div className="flex items-center gap-4">
+      <div className="text-gray-400">{icon}</div>
+      <div>
+        <p className="text-sm text-gray-500">{label}</p>
+        <p className="font-medium text-gray-800">{value}</p>
+      </div>
     </div>
   );
 } 

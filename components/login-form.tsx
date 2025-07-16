@@ -58,36 +58,41 @@ export function LoginForm() {
   }
 
   return (
-    <Card className="w-full max-w-md">
-      <CardHeader className="text-center">
-        <div className="mx-auto bg-slate-800 p-4 rounded-full mb-4">
+    <div className="w-full max-w-md">
+      <div className="text-center mb-8">
+        <div className="inline-block bg-gray-800 p-4 rounded-full">
           <Building className="h-8 w-8 text-white" />
         </div>
-        <CardTitle className="text-2xl">UTS Startup Portal</CardTitle>
-        <CardDescription>Enter your email below to receive a magic link.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email Address</FormLabel>
-                  <FormControl>
-                    <Input placeholder="name@example.com" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Sending..." : "Send Magic Link"}
-            </Button>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+        <h1 className="text-3xl font-bold text-gray-900 mt-4">UTS Startup Portal</h1>
+        <p className="text-gray-500">Enter your email below to receive a magic link to your dashboard.</p>
+      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Secure Login</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email Address</FormLabel>
+                    <FormControl>
+                      <Input placeholder="name@example.com" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? "Sending..." : "Send Magic Link"}
+              </Button>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
+    </div>
   );
 } 
