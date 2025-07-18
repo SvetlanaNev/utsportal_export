@@ -46,7 +46,7 @@ export default function DashboardPage() {
       const jsonData = await response.json();
       setData(jsonData);
     } catch (e) {
-      // Error handling is silent as per previous steps
+      // Silent error
     } finally {
       setIsLoading(false);
     }
@@ -62,27 +62,27 @@ export default function DashboardPage() {
   };
 
   if (isLoading) {
-    return <div className="flex items-center justify-center h-screen bg-slate-50">Loading...</div>;
+    return <div className="flex items-center justify-center h-screen bg-gray-100">Loading...</div>;
   }
 
   if (!data) {
-    return <div className="flex items-center justify-center h-screen bg-slate-50">No data found.</div>;
+    return <div className="flex items-center justify-center h-screen bg-gray-100">No data found.</div>;
   }
 
   const loggedInUser = data.teamMembers.find(member => member.email === data.userEmail);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200">
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
+      <header className="bg-white dark:bg-gray-800 border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center space-x-4">
-              <div className="p-3 bg-gray-800 rounded-lg">
+              <div className="p-3 bg-gray-800 dark:bg-gray-700 rounded-lg">
                 <Building className="h-6 w-6 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-900">{data.startupName}</h1>
-                <p className="text-sm text-gray-500">Startup Dashboard</p>
+                <h1 className="text-xl font-bold text-gray-900 dark:text-white">{data.startupName}</h1>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Startup Dashboard</p>
               </div>
             </div>
             <div className="flex items-center space-x-2">
@@ -111,9 +111,9 @@ export default function DashboardPage() {
                 <CardTitle>Startup Information</CardTitle>
               </CardHeader>
               <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <InfoItem icon={<Building />} label="Startup Name" value={data.startupName} />
-                <InfoItem icon={<Mail />} label="Primary Contact" value={data.primaryContactEmail} />
-                <InfoItem icon={<Users />} label="Team Size" value={`${data.teamMembers.length} members`} />
+                <InfoItem icon={<Building className="h-6 w-6" />} label="Startup Name" value={data.startupName} />
+                <InfoItem icon={<Mail className="h-6 w-6" />} label="Primary Contact" value={data.primaryContactEmail} />
+                <InfoItem icon={<Users className="h-6 w-6" />} label="Team Size" value={`${data.teamMembers.length} members`} />
               </CardContent>
             </Card>
 
@@ -123,10 +123,10 @@ export default function DashboardPage() {
                   <CardTitle>Your Profile</CardTitle>
                 </CardHeader>
                 <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  <InfoItem icon={<Mail />} label="Email" value={loggedInUser.email} />
-                  <InfoItem icon={<Phone />} label="Mobile" value={loggedInUser.mobile} />
-                  <InfoItem icon={<Briefcase />} label="Position" value={loggedInUser.position} />
-                  <InfoItem icon={<UserCheck />} label="UTS Association" value={loggedInUser.association} />
+                  <InfoItem icon={<Mail className="h-6 w-6" />} label="Email" value={loggedInUser.email} />
+                  <InfoItem icon={<Phone className="h-6 w-6" />} label="Mobile" value={loggedInUser.mobile} />
+                  <InfoItem icon={<Briefcase className="h-6 w-6" />} label="Position" value={loggedInUser.position} />
+                  <InfoItem icon={<UserCheck className="h-6 w-6" />} label="UTS Association" value={loggedInUser.association} />
                 </CardContent>
               </Card>
             )}
@@ -147,7 +147,7 @@ export default function DashboardPage() {
                     </Avatar>
                     <div className="flex-1">
                       <p className="font-semibold text-sm">{member.name}</p>
-                      <p className="text-xs text-gray-500">{member.email}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">{member.email}</p>
                     </div>
                   </div>
                 ))}
@@ -163,11 +163,11 @@ export default function DashboardPage() {
 
 function InfoItem({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
-    <div className="flex items-center gap-4">
-      <div className="text-gray-400">{icon}</div>
-      <div>
-        <p className="text-sm text-gray-500">{label}</p>
-        <p className="font-medium text-gray-800">{value}</p>
+    <div className="flex items-start gap-4">
+      <div className="text-muted-foreground mt-1">{icon}</div>
+      <div className="grid gap-1">
+        <p className="text-sm font-medium leading-none">{label}</p>
+        <p className="text-sm text-muted-foreground">{value}</p>
       </div>
     </div>
   );
