@@ -50,13 +50,8 @@
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
-
   body {
-    background-color: hsl(var(--background));
-    color: hsl(var(--foreground));
+    @apply bg-background text-foreground;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 }
