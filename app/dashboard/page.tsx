@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ChangeRequestForm } from '@/components/change-request-form';
 import { Mail, Phone, Building, LogOut, Briefcase, UserCheck, Users, Edit } from 'lucide-react';
 
@@ -72,103 +72,110 @@ export default function DashboardPage() {
   const loggedInUser = data.teamMembers.find(member => member.email === data.userEmail);
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
-      <header className="bg-white dark:bg-gray-800 border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <div className="flex items-center space-x-4">
-              <div className="p-3 bg-gray-800 dark:bg-gray-700 rounded-lg">
-                <Building className="h-6 w-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-gray-900 dark:text-white">{data.startupName}</h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Startup Dashboard</p>
-              </div>
+    <div className="min-h-screen bg-gray-50">
+      <header className="bg-white border-b">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center py-6">
+          <div className="flex items-center gap-3">
+            <div className="bg-blue-100 p-2 rounded-lg">
+              <Building className="h-6 w-6 text-blue-600" />
             </div>
-            <div className="flex items-center space-x-2">
-              {loggedInUser && (
-                <ChangeRequestForm teamMember={loggedInUser} onSuccess={fetchData}>
-                  <Button variant="outline" size="sm" className="flex items-center gap-2">
-                    <Edit className="h-4 w-4" />
-                    Update My Profile
-                  </Button>
-                </ChangeRequestForm>
-              )}
-              <Button onClick={handleLogout} variant="ghost" size="icon" aria-label="Log out">
-                <LogOut className="h-5 w-5" />
-              </Button>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">{data.startupName}</h1>
+              <p className="text-sm text-gray-500">Startup Dashboard</p>
             </div>
+          </div>
+          <div className="flex items-center gap-2">
+            {loggedInUser && (
+              <ChangeRequestForm teamMember={loggedInUser} onSuccess={fetchData}>
+                <Button variant="outline" className="gap-2">
+                  <Edit className="h-4 w-4" /> Update Profile
+                </Button>
+              </ChangeRequestForm>
+            )}
+            <Button onClick={handleLogout} variant="ghost" size="icon" aria-label="Log out">
+              <LogOut className="h-5 w-5" />
+            </Button>
           </div>
         </div>
       </header>
-
-      <main className="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-
-          <div className="lg:col-span-2 grid grid-cols-1 gap-8">
-            <Card>
-              <CardHeader>
-                <CardTitle>Startup Information</CardTitle>
-              </CardHeader>
-              <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <InfoItem icon={<Building className="h-6 w-6" />} label="Startup Name" value={data.startupName} />
-                <InfoItem icon={<Mail className="h-6 w-6" />} label="Primary Contact" value={data.primaryContactEmail} />
-                <InfoItem icon={<Users className="h-6 w-6" />} label="Team Size" value={`${data.teamMembers.length} members`} />
-              </CardContent>
-            </Card>
-
-            {loggedInUser && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Your Profile</CardTitle>
-                </CardHeader>
-                <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  <InfoItem icon={<Mail className="h-6 w-6" />} label="Email" value={loggedInUser.email} />
-                  <InfoItem icon={<Phone className="h-6 w-6" />} label="Mobile" value={loggedInUser.mobile} />
-                  <InfoItem icon={<Briefcase className="h-6 w-6" />} label="Position" value={loggedInUser.position} />
-                  <InfoItem icon={<UserCheck className="h-6 w-6" />} label="UTS Association" value={loggedInUser.association} />
-                </CardContent>
-              </Card>
-            )}
-          </div>
-
-          <div className="lg:col-span-1">
-            <Card>
-              <CardHeader>
-                <CardTitle>Team Members</CardTitle>
-                <CardDescription>All members of your startup team</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {data.teamMembers.map((member) => (
-                  <div key={member.id} className="flex items-center space-x-4">
-                    <Avatar>
-                      <AvatarImage src={`https://api.dicebear.com/8.x/initials/svg?seed=${member.name}`} />
-                      <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1">
-                      <p className="font-semibold text-sm">{member.name}</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">{member.email}</p>
-                    </div>
+      <main className="max-w-5xl mx-auto py-10 px-4 grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Startup Info */}
+        <Card className="rounded-xl shadow-sm">
+          <CardHeader className="flex flex-row items-center gap-3 pb-2">
+            <Building className="h-6 w-6 text-blue-600" />
+            <CardTitle className="text-xl">Startup Information</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <div>
+              <p className="text-sm text-muted-foreground">Startup Name</p>
+              <p className="font-semibold">{data.startupName}</p>
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Primary Contact</p>
+              <p className="font-semibold">{data.primaryContactEmail}</p>
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Team Size</p>
+              <p className="font-semibold">{data.teamMembers.length} members</p>
+            </div>
+          </CardContent>
+        </Card>
+        {/* Team Members */}
+        <Card className="rounded-xl shadow-sm">
+          <CardHeader className="flex flex-row items-center gap-3 pb-2">
+            <Users className="h-6 w-6 text-blue-600" />
+            <div>
+              <CardTitle className="text-xl">Team Members</CardTitle>
+              <CardDescription>All members of your startup team</CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {data.teamMembers.map((member) => (
+              <div key={member.id} className="flex items-center gap-4">
+                <Avatar>
+                  <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
+                </Avatar>
+                <div className="flex-1">
+                  <p className="font-semibold text-sm">{member.name} {member.email === data.userEmail && <span className="ml-2 px-2 py-0.5 text-xs rounded-full bg-blue-100 text-blue-700 font-medium">Active</span>}</p>
+                  <p className="text-xs text-muted-foreground">{member.email}</p>
+                  <div className="flex flex-wrap gap-2 mt-1 text-xs text-muted-foreground">
+                    <span className="flex items-center gap-1"><Briefcase className="h-4 w-4" />{member.position}</span>
+                    <span className="flex items-center gap-1"><Phone className="h-4 w-4" />{member.mobile}</span>
+                    <span className="flex items-center gap-1"><UserCheck className="h-4 w-4" />{member.association}</span>
                   </div>
-                ))}
-              </CardContent>
-            </Card>
-          </div>
-
-        </div>
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+        {/* Profile Card (full width on mobile) */}
+        <Card className="rounded-xl shadow-sm md:col-span-2">
+          <CardHeader>
+            <CardTitle>Your Profile</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <Mail className="h-4 w-4" />
+              <span>{loggedInUser?.email}</span>
+            </div>
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <Phone className="h-4 w-4" />
+              <span>{loggedInUser?.mobile}</span>
+            </div>
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <Briefcase className="h-4 w-4" />
+              <span>{loggedInUser?.position}</span>
+            </div>
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <UserCheck className="h-4 w-4" />
+              <span>{loggedInUser?.association}</span>
+            </div>
+            <div>
+              <span className="inline-block mt-2 px-3 py-1 text-xs rounded-full bg-blue-100 text-blue-700 font-medium">Active</span>
+            </div>
+          </CardContent>
+        </Card>
       </main>
-    </div>
-  );
-}
-
-function InfoItem({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
-  return (
-    <div className="flex items-start gap-4">
-      <div className="text-muted-foreground mt-1">{icon}</div>
-      <div className="grid gap-1">
-        <p className="text-sm font-medium leading-none">{label}</p>
-        <p className="text-sm text-muted-foreground">{value}</p>
-      </div>
     </div>
   );
 } 
