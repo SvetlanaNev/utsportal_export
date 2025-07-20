@@ -1,3 +1,4 @@
+// Vercel cache-busting comment: 1724229675017
 import type { Config } from "tailwindcss"
 
 const config = {
